@@ -270,7 +270,7 @@ enum MarkdownLineStyle : LineStyling {
     var usesSystemImageName = true
     var usesAttachmentForLinks = true
 
-    let perfomanceLog = PerformanceLog(with: "SwiftyMarkdownPerformanceLogging", identifier: "Swifty Markdown", log: .swiftyMarkdownPerformance)
+    let performanceLog = PerformanceLog(with: "SwiftyMarkdownPerformanceLogging", identifier: "Swifty Markdown", log: .swiftyMarkdownPerformance)
 
     /**
 
@@ -394,7 +394,7 @@ enum MarkdownLineStyle : LineStyling {
     open func attributedString(from markdownString : String? = nil) -> NSAttributedString {
 
         self.previouslyFoundTokens.removeAll()
-        self.perfomanceLog.start()
+        self.performanceLog.start()
 
         if let existentMarkdownString = markdownString {
             self.string = existentMarkdownString
@@ -420,7 +420,7 @@ enum MarkdownLineStyle : LineStyling {
             keyValuePairs[key] = strings[1].trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
-        self.perfomanceLog.tag(with: "(line processing complete)")
+        self.performanceLog.tag(with: "(line processing complete)")
 
         self.tokeniser.metadataLookup = keyValuePairs
 
@@ -430,13 +430,13 @@ enum MarkdownLineStyle : LineStyling {
             }
             let finalTokens = self.tokeniser.process(line.line)
             self.previouslyFoundTokens.append(contentsOf: finalTokens)
-            self.perfomanceLog.tag(with: "(tokenising complete for line \(idx)")
+            self.performanceLog.tag(with: "(tokenising complete for line \(idx)")
 
             attributedString.append(attributedStringFor(tokens: finalTokens, in: line))
 
         }
 
-        self.perfomanceLog.end()
+        self.performanceLog.end()
 
         return attributedString
     }
@@ -602,6 +602,7 @@ extension SwiftyMarkdown {
                 #if !os(macOS)
                 if #available(iOS 13.0, *), usesSystemImageName {
                     image1Attachment.image = UIImage(systemName: token.metadataStrings[imgIdx])
+                    image1Attachment.image = image1Attachment.image?.withRenderingMode(.alwaysTemplate)
                 } else {
                     image1Attachment.image = UIImage(named: token.metadataStrings[imgIdx])
                 }
